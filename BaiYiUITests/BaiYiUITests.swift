@@ -2,7 +2,7 @@
 //  BaiYiUITests.swift
 //  BaiYiUITests
 //
-//  Created by 脇山　和茂 on 2020/07/23.
+//  Created by zhaoyuanjing on 2020/07/23.
 //  Copyright © 2020 gansukanglin. All rights reserved.
 //
 
