@@ -11,17 +11,17 @@ import Alamofire
 /**
  *  网络请求统一入口
  */
+
+
+typealias FSResponseSuccess = (_ response: String) -> Void
+typealias FSResponseFail = (_ error: String) -> Void
+typealias FSNetworkStatus = (_ NetworkStatus: Int32) -> Void
+typealias FSProgressBlock = (_ progress: Int32) -> Void
+
+
 struct HttpRequest {
     // 参考地址： http://qiita.com/k-yamada@github/items/569c4c97f0b8e4605e04
-    class HttpManager {
-        static let sharedInstance: SessionManager = {
-            let configuration = URLSessionConfiguration.default
-            configuration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
-            configuration.timeoutIntervalForRequest = 15
-            configuration.timeoutIntervalForResource = 15
-            return SessionManager(configuration: configuration)
-        }()
-    }
+    
     static func restfulRequest(methodType: HTTPMethod,
                                pathAndParams: PathAndParams,
                                urlStr: String = "",
@@ -31,60 +31,59 @@ struct HttpRequest {
         let parameters  = pathAndParams.1
         let parametersJson = JSON(parameters!)
         
-        var url:URL!
-//        if (urlStr != "") {
-//            url = URL.init(string: URLs.getChatip() + requestPath)
-//        }else{
-//            url = URL.init(string: URLs.getHostAddress() + requestPath)
-//        }
-         url = URL.init(string:requestPath)
         
-//
+        let  Url = URL.init(string: URLs.getHostAddress() + requestPath)
+        //let  Url = URL.init(string:requestPath)
         var request: DataRequest?
-          print(url!)
-          print(parametersJson)
-//        if requestPath == "P01_login/login" {
-//            //  let responseToken = responseJSON[BerResponseConstants.token]
-//            //  setValueForKey(value: responseToken as AnyObject, key: Constants.token)
-//        }
+        print(Url!.absoluteString)
+        print(parametersJson)
         
-//        构造header
-        var headers:HTTPHeaders? = nil
-        if (stringForKey(key: Constants.token) != nil && stringForKey(key: Constants.token) != "") {
-             headers = [
-            "Authorization": stringForKey(key: Constants.token),
-            "Accept": "application/json"
-                ] as? HTTPHeaders
+        var token = ""
+        if stringForKey(key: Constants.token) != nil {
+            token = stringForKey(key: Constants.token)!
         }
+        //        构造header
+        let headers: HTTPHeaders = [
+            "Device-Type": "ios",
+            "XX-Token": token
+        ]
         switch methodType {
         case .get, .delete:
-            request =  HttpManager.sharedInstance.request(url!, method: methodType, parameters: parameters!, encoding: JSONEncoding.default, headers: headers)
+            request =  AF.request(Url!, method: methodType,encoding: JSONEncoding.default, headers: headers)
+        //  request =  HttpManager.sharedInstance.request(Url!, method: methodType, parameters: parameters!, encoding: JSONEncoding.default, headers: headers)
         case .post, .put:
-            request =  HttpManager.sharedInstance.request(url!, method: methodType, parameters: parameters!, encoding: JSONEncoding.default, headers: headers)
+            request =  AF.request(Url!, method: methodType, parameters: parameters,encoding: JSONEncoding.default, headers: headers)
+            
         default:
             break
         }
-          request?.responseJSON(completionHandler: { (response) in
+        request?.responseJSON(completionHandler: {(response) in
             let result = response.result
-            if result.isSuccess {
-                if let json = response.result.value {
-                    let responseJson = JSON(json)
-                    print(url!)
-                    print(responseJson)
-                    completionHandler(.Success(responseJson))
-                 }
-             }else{
-                completionHandler(.Failure(result.error!))
+            switch result {
+            case .success:
+                guard let dict = response.value else {
+                    //print("数据请求出错")
+                    DialogueUtils.dismiss()
+                    completionHandler(.Failure(JSON(["code":"100888"])))
+                    return
+                }
+                let responseJson = JSON(dict)
+                print(Url!.absoluteString)
+                print(responseJson)
+                completionHandler(.Success(responseJson))
+            case .failure:
+                //print("数据请求出错")
+                completionHandler(.Failure(JSON(["code":"100888"])))
+                 DialogueUtils.dismiss()
+               // completionHandler(.Failure(Error.self as! Error))
             }
         })
-
-      }
+    }
     
- 
     static func getRequest(pathAndParams: PathAndParams, completionHandler: @escaping (_ responseResult: ResponseResult<JSON>) -> Void) {
         restfulRequest(methodType: .get, pathAndParams: pathAndParams, completionHandler: completionHandler)
-     }
- 
+    }
+    
     static func postRequest(pathAndParams: PathAndParams, completionHandler: @escaping (_ responseResult: ResponseResult<JSON>) -> Void) {
         restfulRequest(methodType: .post, pathAndParams: pathAndParams, completionHandler: completionHandler)
     }
@@ -92,73 +91,56 @@ struct HttpRequest {
     static func postRequestSpecical(url:String ,pathAndParams: PathAndParams, completionHandler: @escaping (_ responseResult: ResponseResult<JSON>) -> Void) {
         restfulRequest(methodType: .post, pathAndParams: pathAndParams,urlStr: url, completionHandler: completionHandler)
     }
- 
+    
     static func putRequest(pathAndParams: PathAndParams, completionHandler: @escaping (_ responseResult: ResponseResult<JSON>) -> Void) {
         restfulRequest(methodType: .put, pathAndParams: pathAndParams, completionHandler: completionHandler)
     }
     
     static func deleteRequest(pathAndParams: PathAndParams, completionHandler: @escaping (_ responseResult: ResponseResult<JSON>) -> Void) {
         restfulRequest(methodType: .delete, pathAndParams: pathAndParams, completionHandler: completionHandler)
-     }
+    }
     
+    static func uploadImage(url:String,filePath:String,success: @escaping (_ content:JSON) -> Void, failure: @escaping (_ errorInfo: String?) -> Void){
+        let fileUrl = URL.init(fileURLWithPath: filePath)
+        var token = ""
+        if stringForKey(key: Constants.token) != nil {
+            token = stringForKey(key: Constants.token)!
+        }
+        let upUrlstr = URLs.getHostAddress() + url
+        let headers: HTTPHeaders = [
+            "Device-Type": "ios",
+            "XX-Token": token
+        ]
+         AF.upload(multipartFormData: { multipartFormData in
+             multipartFormData.append(fileUrl, withName: "file")
+         }, to: upUrlstr, usingThreshold: MultipartFormData.encodingMemoryThreshold,method: .post, headers: headers, interceptor: nil, fileManager:.default).responseJSON { (response) in
+            switch response.result {
+            case .success:
+                guard let dict = response.value else {
+                    failure("图片服务器出错")
+                    //("图片上传出错")
+                    return
+                }
+                let responseJson = JSON(dict)
+                let responseData = responseJson[BerResponseConstants.responseData]
+                print(upUrlstr)
+                print(responseJson)
+                if responseJson["code"].intValue == 1 {
+                    success(responseData)
+                }else{
+                    let msg = responseJson["msg"].stringValue
+                    failure(msg)
+                   // print(content + msg)
+                }
+            case .failure:
+                failure("图片服务器出错")
+                print("图片上传出错")
+            }
+        }
+    }
     
-//    static func uploadImage(url:String,filePath:String,success: @escaping (_ content:String) -> Void, failure: @escaping (_ errorInfo: String?) -> Void){
-//        let fileUrl = URL.init(fileURLWithPath: filePath)
-//        let memberId = stringForKey(key: Constants.userid)!.data(using: String.Encoding.utf8, allowLossyConversion: false)
-//        let userType = stringForKey(key: Constants.userType)!.data(using: String.Encoding.utf8, allowLossyConversion: false)
-//        let upUrl = URL.init(string: URLs.getHostAddress() + url)
-//         HttpManager.sharedInstance.upload(multipartFormData: { (multipartFormData) in
-//            multipartFormData.append(memberId!, withName: "userId", mimeType: "text/plain")
-//            multipartFormData.append(fileUrl, withName: "file")
-//            multipartFormData.append(userType!, withName: "userType",mimeType: "text/plain")
-//            if url == MemberAPI.companyLogoImgUploadPath {
-//                let companyId = stringForKey(key: Constants.companyid)!.data(using: String.Encoding.utf8, allowLossyConversion: false)
-//                multipartFormData.append(companyId!, withName: "companyId",mimeType: "text/plain")
-//            }
-//         }, to: upUrl!) { (result) in
-//            switch result{
-//            case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):
-//                upload.responseJSON(completionHandler: { (responseData) in
-//                    let result = responseData.result
-//                    if result.isSuccess{
-//                        if let json = responseData.result.value {
-//                              let responseJson = JSON(json)
-//                              // print(responseJson)
-//                            if responseJson["responseCode"].stringValue == BerResponseConstants.Code.Success.rawValue{
-//                                let content = responseJson["responseData"]
-//                                success(content["url"].stringValue)
-//                            }else{
-//                               failure("图片服务器出错")
-//                            }
-//                         }
-//                    }else{
-//                        failure("图片服务器出错")
-//                    }
-//                 })
-//             case.failure(let error):
-//             //   print(error.localizedDescription)
-//                failure("图片服务器出错")
-//            }
-//        }
-//    }
- }
-//                 upload.response(completionHandler: { (responseData) in
-//                    let content = try!JSONSerialization.jsonObject(with: responseData.data!, options: JSONSerialization.ReadingOptions.allowFragments)
-//                    print(content)
-//
-//                    if responseData.response != nil && responseData.data != nil{
-//                        let stateCode = responseData.response?.statusCode
-//                        if stateCode == 200 {
-//                            if responseData.data!.count > 0 {
-//                                let content = try!JSONSerialization.jsonObject(with: responseData.data!, options: JSONSerialization.ReadingOptions.allowFragments)
-//                                print(content)
-//                            }else{
-//
-//                            }
-//                        }else {
-//
-//                        }
-//                    }else {
-//
-//                    }
-//                })
+}
+
+
+
+

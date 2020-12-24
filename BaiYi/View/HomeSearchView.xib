@@ -18,7 +18,7 @@
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IBa-1h-kks">
                             <rect key="frame" x="49" y="3" width="236" height="27"/>
-                            <state key="normal" title="请搜索您感兴趣的内容">
+                            <state key="normal" title="请输入您要搜索的内容">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>

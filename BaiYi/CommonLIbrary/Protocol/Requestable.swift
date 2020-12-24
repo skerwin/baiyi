@@ -8,7 +8,7 @@
 
 import SwiftyJSON
 import Foundation
- 
+
 enum HttpMethodType {
     case GET
     case POST
@@ -72,9 +72,11 @@ extension Requestable where Self: UIViewController {
         }
     }
     
- 
-    func getRequest(pathAndParams: PathAndParams, showHUD: Bool, needCache: Bool) {
-        
+    func getRequest(pathAndParams: PathAndParams, showHUD: Bool = false, needCache: Bool = false) {
+        if showHUD { DialogueUtils.showWithStatus() }
+        HttpRequest.getRequest(pathAndParams: pathAndParams) { (responseResult) -> Void in
+            self.processResponseResult(requestPath: pathAndParams.0, responseResult: responseResult, methodType: .GET)
+        }
     }
     
     func putRequest(pathAndParams: PathAndParams, showHUD: Bool) {
@@ -90,14 +92,14 @@ extension Requestable where Self: UIViewController {
     
     func onResponse(requestPath: String, responseResult: SwiftyJSON.JSON, methodType: HttpMethodType, responseTimestamp: String, needCache: Bool = false) {
         onResponse(requestPath: requestPath, responseResult: responseResult, methodType: methodType)
-     }
+    }
     
     func onFailure(responseCode: String, description: String) {}
     
     func onFailure(responseCode: String, description: String, requestPath: String = "") {
-         onFailure(responseCode: responseCode, description: description)
+        onFailure(responseCode: responseCode, description: description)
     }
- 
+    
     /**
      处理网络请求返回的结果
      
@@ -108,62 +110,36 @@ extension Requestable where Self: UIViewController {
         switch responseResult {
         case .Success(let responseJSON):
             DialogueUtils.dismiss()
-            let responseCode = responseJSON[BerResponseConstants.responseCode].stringValue
-            let errorCode = responseJSON[BerResponseConstants.errorCode].stringValue
-            let responseToken = responseJSON[BerResponseConstants.token].string
- 
- 
-            
-            if responseToken != nil {
-                if responseToken == "700001" || responseToken == "700000" || responseToken == "700003" || responseToken == "700004" || responseToken == "700005"{
-                    //发出退出消息 清空本地缓存
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.TokenChangeRefreshNotification), object: responseToken)
-                }else{
-                    setValueForKey(value: responseToken as AnyObject, key: Constants.token)
-                }
-            }
-            
+            let responseCode = String.init(responseJSON[BerResponseConstants.responseCode].intValue)
             if responseCode == BerResponseConstants.Code.Success.rawValue {
-                if errorCode == ""{
-                    let responseData = responseJSON[BerResponseConstants.responseData]
-                    let responseTimestamp = responseJSON[BerResponseConstants.responseTimestamp].stringValue
-                    if needCache, let cacheValue = responseData.rawString() { // 缓存开启的标志
-                        let chace = Cache.CacheManager.sharedInstance
-                        try? chace?.setObject(cacheValue, forKey: requestPath)
-                    }
-                      self.onResponse(requestPath: requestPath, responseResult: responseData, methodType: methodType, responseTimestamp: responseTimestamp)
-                }else{
-                    
-                    let responseData = responseJSON[BerResponseConstants.responseData]
-                    let errorMessage = responseData[BerResponseConstants.errorMessage].stringValue
-                    self.onFailure(responseCode: errorCode, description: errorMessage, requestPath: requestPath)
-                 }
-            } else if responseCode == BerResponseConstants.Code.NoPermission.rawValue { // Token 失效
- 
-            } else if responseCode == BerResponseConstants.Code.NoBankCard.rawValue {
-                var desc = responseJSON[BerResponseConstants.desc].stringValue
-                 if desc.isEmpty {
-                    desc = responseJSON[BerResponseConstants.errorMessage].stringValue
-                }
-                self.onFailure(responseCode: responseCode, description: desc, requestPath: requestPath)
-            } else {
-               // todo  为了调获取简历接口 暂时通过
-//                 let responseData = responseJSON[BerResponseConstants.responseData]
-//                 let responseTimestamp = responseJSON[BerResponseConstants.responseTimestamp].stringValue
-//                 self.onResponse(requestPath: requestPath, responseResult: responseData, methodType: methodType, responseTimestamp: responseTimestamp)
- 
                 let responseData = responseJSON[BerResponseConstants.responseData]
+//                if needCache, let cacheValue = responseData.rawString() { // 缓存开启的标志
+//                    let chace = Cache.CacheManager.sharedInstance
+//                    try? chace?.setObject(cacheValue, forKey: requestPath)
+//                }
+                self.onResponse(requestPath: requestPath, responseResult: responseData, methodType: methodType)
+            }else if  responseCode == BerResponseConstants.Code.TokenFailure.rawValue{
+                //发出退出消息 清空本地缓存
+               
+                 NotificationCenter.default.post(name:  NSNotification.Name(rawValue: Constants.TokenChangeRefreshNotification), object: nil)
+                
+            }else if responseCode == BerResponseConstants.Code.TokenDeleted.rawValue{
+                //发出退出消息 清空本地缓存
+                 NotificationCenter.default.post(name:  NSNotification.Name(rawValue: Constants.TokenChangeDeleteNotification), object: responseJSON[BerResponseConstants.desc].stringValue)
+            }
+            else {
                 var desc = responseJSON[BerResponseConstants.desc].stringValue
                 if desc.isEmpty {
-                    desc = responseData[BerResponseConstants.errorMessage].stringValue
+                    desc = "接口出错啦"
                 }
                 self.onFailure(responseCode: responseCode, description: desc, requestPath: requestPath)
             }
             
         case .Failure( _):
-          DialogueUtils.dismiss()
+            // let responseCode = responseJSON[BerResponseConstants.responseCode]
+            //  DialogueUtils.dismiss()
             self.onFailure(responseCode:BerResponseConstants.Code.NetworkNotConnected.rawValue, description: BerResponseConstants.networkNotConnectedTips, requestPath: requestPath)
-            //showOnlyTextHUD(BerResponseConstants.networkNotConnectedTips)
+            
         }
     }
     

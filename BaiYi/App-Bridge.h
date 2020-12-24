@@ -9,6 +9,15 @@
 #ifndef App_Bridge_h
 #define App_Bridge_h
 
-#import "UIImage+animatedGIF.h"
- 
+
+#import "UICollectionViewLeftAlignedLayout.h"
+
+#import "ZFPlayer.h"
+#import <ZFPlayer/ZFPlayer.h>
+#import <ZFPlayer/ZFPlayerControlView.h>
+#import <ZFPlayer/ZFAVPlayerManager.h>
+#import <ZFPlayer/UIView+ZFFrame.h>
+#import <ZFPlayer/UIImageView+ZFCache.h>
+#import "ZFUtilities.h"
+// 
 #endif /* App_Bridge_h */

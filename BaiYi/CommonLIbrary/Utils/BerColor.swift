@@ -21,6 +21,12 @@ struct ZYJColor {
     
     static let redColorButton = colorWithHexString(hex: "FF397F")
     
+    static let chatLine = colorWithHexString(hex: "F0F0F0")
+    
+    static let testLine = colorWithHexString(hex: "DEDEDE")
+    
+    
+    
     struct Line {
 
         static let grey = RGBA(r:240, g:240, b:240, a:1)

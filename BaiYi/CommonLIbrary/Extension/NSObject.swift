@@ -21,4 +21,8 @@ extension NSObject {
         return (number & 1) != 0
     }
     
+    
+    public func intToString(number: Int) -> String {
+        return String.init(number)
+    }
 }

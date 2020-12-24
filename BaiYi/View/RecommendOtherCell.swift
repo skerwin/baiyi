@@ -10,8 +10,18 @@ import UIKit
 
 class RecommendOtherCell: UITableViewCell {
 
+    @IBOutlet weak var imageLeft: UIImageView!
+    
+    @IBOutlet weak var content: UILabel!
+    
+    @IBOutlet weak var headImage: UIImageView!
+    @IBOutlet weak var writer: UILabel!
+    @IBOutlet weak var readCount: UILabel!
+    @IBOutlet weak var commentCount: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
+        headImage.layer.cornerRadius = 7.5;
+        headImage.layer.masksToBounds = true;
         // Initialization code
     }
 
@@ -19,6 +29,17 @@ class RecommendOtherCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    var model:ArticleModel? {
+                didSet {
+                    content.text = model?.title
+                    imageLeft.displayImageWithURL(url: model?.img_url)
+                    readCount.text = "\(model?.hits ?? 0)"
+                    commentCount.text = "\(model?.comments ?? 0)"
+                    headImage.displayHeadImageWithURL(url: model?.publisher?.avatar_url)
+                    writer.text = model?.publisher?.name
+           }
     }
     
 }

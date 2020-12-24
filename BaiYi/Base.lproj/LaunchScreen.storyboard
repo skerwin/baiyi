@@ -18,8 +18,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchImage-800-Portrait-736h@3x" translatesAutoresizingMaskIntoConstraints="NO" id="J9n-Jx-PGd">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchImage.png" translatesAutoresizingMaskIntoConstraints="NO" id="J9n-Jx-PGd">
+                                <rect key="frame" x="0.0" y="24" width="414" height="838"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
@@ -27,7 +27,7 @@
                             <constraint firstItem="J9n-Jx-PGd" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="3NH-TE-hBL"/>
                             <constraint firstAttribute="trailing" secondItem="J9n-Jx-PGd" secondAttribute="trailing" id="42R-KK-bzT"/>
                             <constraint firstItem="5e1-B1-ZBE" firstAttribute="top" secondItem="J9n-Jx-PGd" secondAttribute="bottom" id="Kvi-UD-N0W"/>
-                            <constraint firstItem="J9n-Jx-PGd" firstAttribute="top" secondItem="FX6-lT-UXt" secondAttribute="bottom" id="cvy-3a-eMU"/>
+                            <constraint firstItem="J9n-Jx-PGd" firstAttribute="top" secondItem="FX6-lT-UXt" secondAttribute="bottom" constant="-20" id="cvy-3a-eMU"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -37,6 +37,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchImage-800-Portrait-736h@3x" width="128" height="128"/>
+        <image name="LaunchImage.png" width="640" height="1136"/>
     </resources>
 </document>

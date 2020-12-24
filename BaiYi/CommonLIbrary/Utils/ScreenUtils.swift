@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+
+
 // 屏幕大小尺寸
 let screenBounds = UIScreen.main.bounds
 let screenSize   = screenBounds.size
@@ -19,13 +21,44 @@ let gridWidth: CGFloat = (screenSize.width / 2) - 4.0
 let iPhone5ScreenWidth: CGFloat = 320
 let iPhone6PScreenWidth: CGFloat = 414.0
 
+
+var iphoneXOrIphoneX11: Bool {
+    get {
+        if screenWidth >= 375.0 && screenHeight >= 812.0 {
+            return true
+        }else{
+            return false
+        }
+     }
+}
+
+var statubarHeight: CGFloat {
+    get {
+        if iphoneXOrIphoneX11 {
+            return 44.0
+        }else{
+            return 20.0
+        }
+    }
+}
+ 
 // 导航栏高度
 let navigationHeight: CGFloat = 44.0
-let statubarHeight: CGFloat = 20.0
 let navigationHeaderAndStatusbarHeight: CGFloat = navigationHeight + statubarHeight
 
 // 底部导航栏高度
-let bottomNavigationHeight: CGFloat = 49.0
+var bottomNavigationHeight: CGFloat {
+    get {
+        if iphoneXOrIphoneX11 {
+            return 49.0 + 34.0
+        }else{
+            return 49
+        }
+    }
+}
+ 
+
+
 
 let pageMenuHeight: CGFloat = 44.0
 

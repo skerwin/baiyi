@@ -12,22 +12,21 @@ typealias PathAndParams = (String, Dictionary<String, AnyObject>?)
 
 /// 获取通用的请求Dictionary[主要是针对POST和PUT的HTTP请求方法]
 func getRequestParamsDictionary(paramsDictionary: Dictionary<String, AnyObject>?) -> Dictionary<String, AnyObject> {
-//    var commonDictionary = getCommonParamsDictionary()
-//    if paramsDictionary != nil{
-//        commonDictionary["requestData"] = convertDictionary2JSONObject(dictionary: paramsDictionary! as NSDictionary)
-//    }else{
-//        commonDictionary["requestData"] = convertDictionary2JSONObject(dictionary: [:] as NSDictionary)
-//    }
-//     return commonDictionary
-    
-    var commonDictionary: Dictionary<String, AnyObject> = Dictionary<String, AnyObject>()
-    
+ 
+    var commonDictionary: Dictionary<String, AnyObject>
     if paramsDictionary != nil{
         commonDictionary = convertDictionary2JSONObject(dictionary: paramsDictionary! as NSDictionary) as! Dictionary<String, AnyObject>
     }else{
-        commonDictionary =  convertDictionary2JSONObject(dictionary: [:] as NSDictionary) as! Dictionary<String, AnyObject>
+        commonDictionary = convertDictionary2JSONObject(dictionary: [:] as NSDictionary) as! Dictionary<String, AnyObject>
     }
     
+    //需要body头的时候用这个
+//    var commonDictionary = getCommonParamsDictionary()
+//    if paramsDictionary != nil{
+//        commonDictionary["data"] = convertDictionary2JSONObject(dictionary: paramsDictionary! as NSDictionary)
+//    }else{
+//        commonDictionary["data"] = convertDictionary2JSONObject(dictionary: [:] as NSDictionary)
+//    }
     return commonDictionary
 }
 
@@ -35,16 +34,13 @@ func getRequestParamsDictionary(paramsDictionary: Dictionary<String, AnyObject>?
 ///  获取通用的请求Dictionary[主要是针对GET和DELETE的HTTP请求方法]
 func getCommonParamsDictionary() -> Dictionary<String, AnyObject> {
     var commonDictionary: Dictionary<String, AnyObject> = Dictionary<String, AnyObject>()
-    if let userId = stringForKey(key: Constants.userid) {
-        commonDictionary["userid"] = userId as AnyObject
-    }else{
-        commonDictionary["userid"] = "" as AnyObject
-    }
-    //commonDictionary["token"] = "10001IIQaCcDma2OnmZ_CwiQrQXsi" as AnyObject
-    commonDictionary["userType"] = stringForKey(key: Constants.userType) as AnyObject
-    commonDictionary["requestTimestamp"] = "1464148475538" as AnyObject
-    commonDictionary["requestNo"] = "WDJ01006" as AnyObject
-     return commonDictionary
+//    if let userId = stringForKey(key: Constants.userid) {
+//        commonDictionary["userid"] = userId as AnyObject
+//    }else{
+//        commonDictionary["userid"] = "" as AnyObject
+//    }
+//    commonDictionary["userType"] = stringForKey(key: Constants.userType) as AnyObject
+      return commonDictionary
 }
 
 

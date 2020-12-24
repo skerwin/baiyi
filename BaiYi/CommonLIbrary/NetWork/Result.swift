@@ -10,7 +10,7 @@ import Foundation
 
 enum ResponseResult<T> {
     case Success(T)
-    case Failure(Error)
+    case Failure(T)
 }
 
 func ==<T: Equatable>(lhs: ResponseResult<T>, rhs: ResponseResult<T>) -> Bool {
@@ -26,26 +26,19 @@ extension ResponseResult {
     static func unit(x: T) -> ResponseResult<T> {
         return .Success(x)
     }
-    
-//    func map<U>(f: @escaping (T) throws-> U) -> ResponseResult<U> {
-//        return flatMap{.unit(try f($0))}
-//    }
-    
+ 
     func flatMap<U>(f:(T) throws-> ResponseResult<U>) -> ResponseResult<U> {
         switch self {
         case .Success(let value):
             do {
                 return try f(value)
             } catch let e {
-                return .Failure(e)
+                return .Failure(e as! U)
             }
             
         case .Failure(let e):
-            return .Failure(e)
+            return .Failure(e as! U)
         }
     }
-    
-//    func apply<U>(rf: ResponseResult<(T) throws-> U>) -> ResponseResult<U> {
-//        return rf.flatMap(f: max)
-//    }
+ 
 }

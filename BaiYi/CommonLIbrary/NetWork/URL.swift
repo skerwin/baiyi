@@ -14,47 +14,33 @@ struct URLs {
          case UAT        = 2 // 试运行环境
          case Product    = 3 // 生产环境
      }
-    
+   // https://demo.lnyouran.com 测试
+   // "https://baiyi.lnyouran.com" 正式
     static var currentEnvironment       = Environment.SIT
     static let currentEnvironmentKey    = "currentEnvironment"
- 
-    static let sitHostAddress           = getAPIIp()
-    static let uatHostAddress           = getAPIIp()
-    static let productHostAddress       = getAPIIp()
+    static let sitHostAddress          = "https://demo.lnyouran.com"
+    static let productHostAddress       = "https://demo.lnyouran.com"
+    //static let uatHostAddress          = "https://demo.lnyouran.com“
     
-//    static func getIp() -> String {
-//        
-//        var ip = "api.zhipin168.jp/"
-// 
-//        return ip
-//       // setValueForKey(value: str as AnyObject, key: Constants.serverIp)
-//    }
-     static func getAPIIp() -> String {
-      
-        return "https://api.zhipin168.jp/"
-       // return "https://" + "testapi.zhipin168.jp/"
-       //   return "http://" + "192.168.1.78:8080/bossapi/"
-     }
-    static func getChatip() -> String {
-        
-        return "wss://chat.zhipin168.jp/"
-     //  return "https://" + "testchat.zhipin168.jp/"
-     //   return "http://" + "192.168.1.78" + ":8080/bossjobchat/"
-        
+ 
+    static func getAPIIp() -> String {
+       // return "https://baiyi.lnyouran.com"
+        return "https://demo.lnyouran.com"
     }
+  
     
     static func getHostAddress() -> String {
-        if objectForKey(key: currentEnvironmentKey) == nil { // 默认 sit
-            return sitHostAddress
+         
+        
+        switch currentEnvironment {
+           case Environment.Product:
+              return productHostAddress
+           case Environment.SIT:
+              return sitHostAddress
+           default: // 默认sit
+              return sitHostAddress
         }
-        switch (objectForKey(key: currentEnvironmentKey) as? Int)! {
-        case Environment.Product.rawValue:
-            return productHostAddress
-        case Environment.SIT.rawValue:
-            return sitHostAddress
-        default: // 默认sit
-            return sitHostAddress
-        }
+        
     }
      /// 当前的网络环境
     static func getCurrentEnvironment() -> Environment {

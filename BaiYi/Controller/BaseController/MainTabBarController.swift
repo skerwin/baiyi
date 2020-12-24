@@ -14,15 +14,17 @@ enum TabbarContentType: Int {
     case HomePage = 0, Channel, Articl, Mine
 }
 
-class MainTabBarController: SwipeableTabBarController {
+class MainTabBarController: UITabBarController {
 
     
     
-    let HomePageController = HomeViewController()
-    let ChannelController = ChannelViewController()
-    let ArticleController = ViewController()
-    let MineController = ViewController()
+    let homePageController = HomeViewController()
+    let channelController = ChannelViewController()
+   
+    let columnForController = ColumnForController()
+    let mineController = UIStoryboard.getMineViewController()
          
+     
     
     override func viewDidLoad() {
         
@@ -30,46 +32,45 @@ class MainTabBarController: SwipeableTabBarController {
         super.viewDidLoad()
  
         addChildViewControllers()
-        if let viewControllers = viewControllers {
-            selectedViewController = viewControllers[0]
+//        addChildViewControllers()
+//        if let viewControllers = viewControllers {
+//            selectedViewController = viewControllers[0]
+//        }
+//             /// Set the animation type for swipe
+//         swipeAnimatedTransitioning?.animationType = SwipeAnimationType.overlap
+//
+//            /// Set the animation type for tap
+//         tapAnimatedTransitioning?.animationType = SwipeAnimationType.push
+//
+//            /// if you want cycling switch tab, set true 'isCyclingEnabled'
+//         isCyclingEnabled = false
+//
+//            /// Disable custom transition on tap.
+//         tapAnimatedTransitioning = nil
+//
+//            /// Set swipe to only work when strictly horizontal.
+//         diagonalSwipeEnabled = false
         }
- 
-             /// Set the animation type for swipe
-         swipeAnimatedTransitioning?.animationType = SwipeAnimationType.overlap
-
-            /// Set the animation type for tap
-         tapAnimatedTransitioning?.animationType = SwipeAnimationType.push
-
-            /// if you want cycling switch tab, set true 'isCyclingEnabled'
-         isCyclingEnabled = false
-
-            /// Disable custom transition on tap.
-         tapAnimatedTransitioning = nil
-            
-            /// Set swipe to only work when strictly horizontal.
-         diagonalSwipeEnabled = false
-        }
-        
-    
-    private func addChildViewControllers() {
-         addNavChildViewController(controller: HomePageController, title: "首页",
-                               image: UIImage(named: "icon_home")!,
-                               selectedImage: UIImage(named: "icon_home_selected")!,
+        private func addChildViewControllers() {
+          channelController.menupagetype = MenuPageType.Channel
+         addNavChildViewController(controller: homePageController, title: "首页",
+                               image: UIImage(named: "iconHome")!,
+                               selectedImage: UIImage(named: "iconHomeSelected")!,
                                tag: TabbarContentType.HomePage.rawValue)
-         addNavChildViewController(controller: ChannelController, title: "公司",
-                               image: UIImage(named: "company")!,
-                               selectedImage: UIImage(named: "company_selected")!,
+         addNavChildViewController(controller: channelController, title: "频道",
+                               image: UIImage(named: "iconChannel")!,
+                               selectedImage: UIImage(named: "iconChannelSelected")!,
                                tag: TabbarContentType.Channel.rawValue)
-         addNavChildViewController(controller: ArticleController, title: "聊天",
-                               image: UIImage(named: "chat")!,
-                               selectedImage: UIImage(named: "chat_selecteded")!,
+         addNavChildViewController(controller: columnForController, title: "栏目",
+                               image: UIImage(named: "iconArctile")!,
+                               selectedImage: UIImage(named: "iconArctileSelected")!,
                                tag: TabbarContentType.Articl.rawValue)
-         addNavChildViewController(controller: MineController, title: "我的",
-                               image: UIImage(named: "mine")!,
-                               selectedImage: UIImage(named: "mine_selected")!,
+         addNavChildViewController(controller: mineController, title: "我的",
+                               image: UIImage(named: "iconMineSelected")!,
+                               selectedImage: UIImage(named: "iconMineSelected")!,
                                tag: TabbarContentType.Mine.rawValue)
        //  self.delegate = self
-        
+
     }
     
     
@@ -80,13 +81,26 @@ class MainTabBarController: SwipeableTabBarController {
            controller.tabBarItem.tag = tag
            controller.tabBarItem.selectedImage = selectedImage.withRenderingMode(.alwaysOriginal)
            let navController = MainNavigationController(rootViewController: controller)
- 
-           addChild(navController)
-           
-       }
-    
-        func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-            // Handle didSelect viewController method here
-        }
 
+           addChild(navController)
+
+       }
+//        func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+//            // Handle didSelect viewController method here
+//        }
+
+}
+extension MainTabBarController: UITabBarControllerDelegate {
+    
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        
+        return true
+    }
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        viewController.viewWillAppear(true)
+    }
+    
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+      //  self.selectedItemTag = item.tag
+    }
 }

@@ -8,81 +8,75 @@
 
 import UIKit
 import XHLaunchAd
-
+import SwiftyJSON
+import Alamofire
  
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
+  
     var window: UIWindow?
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
  
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.backgroundColor = UIColor.white
-        window?.makeKeyAndVisible()
         
-        XHLaunchAd.setLaunch(.launchScreen)
+       
+        window = UIWindow(frame: UIScreen.main.bounds)
+       
+        
+        
         let imageAdconfiguration = XHLaunchImageAdConfiguration.default()
-        imageAdconfiguration.duration = 1;
-        imageAdconfiguration.imageNameOrURLString = "adImage4.gif"
-        imageAdconfiguration.openModel = "http://www.it7090.com"
-        XHLaunchAd.imageAd(with: imageAdconfiguration, delegate: self)
+        XHLaunchAd.setLaunch(.launchImage)
+        XHLaunchAd.setWaitDataDuration(5)
 
-        self.window?.rootViewController = MainTabBarController()
+        let  Url = URL.init(string: (URLs.getHostAddress() + HomeAPI.boot_imgPath))
+        print(Url!.absoluteString)
+        var request: DataRequest?
+
+//        let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTI2LCJtb2JpbGUiOiIxNTI4MDk5NjkwMCIsImxvZ2luX3RpbWUiOjE2MDQyODQyMDV9.sGDDw5ysoqt6dpEr0wffO6e9rApxnbOj4EfPckXV9lY"
+        let headers: HTTPHeaders = [
+            "Device-Type": "ios",
+            "XX-Token": ""
+        ]
+        request =  AF.request(Url!, method: .get, parameters: nil,encoding: JSONEncoding.default, headers: headers)
+
+        request?.responseJSON(completionHandler: { (response) in
+            let result = response.result
+            switch result {
+            case .success:
+                guard let dict = response.value else {
+                    print("启动图数据请求出错")
+                    return
+                }
+                let responseJson = JSON(dict)
+                print(Url!.absoluteString)
+                print(responseJson)
+                let responseData = responseJson[BerResponseConstants.responseData]["start_img"].stringValue
+
+                imageAdconfiguration.duration = 3;
+                imageAdconfiguration.imageNameOrURLString = responseData
+                //imageAdconfiguration.openModel = "http://www.it7090.com"
+                XHLaunchAd.imageAd(with: imageAdconfiguration, delegate: self)
+
+          
+             case .failure:
+                print("启动图数据请求出错")
+             }
+        })
+
+         window?.makeKeyAndVisible()
+         window?.backgroundColor = UIColor.white
+        
+        if (stringForKey(key: Constants.token) != nil && stringForKey(key: Constants.token) != "") {
+            self.window?.rootViewController =  MainTabBarController()
+        }else{
+            self.window?.rootViewController = UIStoryboard.getLoginController()
+        }
+ 
         
         return true
     }
- 
-    
-//    //配置广告数据
-//    XHLaunchImageAdConfiguration *imageAdconfiguration = [XHLaunchImageAdConfiguration new];
-//    //广告停留时间
-//    imageAdconfiguration.duration = 5;
-//    //广告frame
-//    imageAdconfiguration.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height-150);
-//    //广告图片URLString/或本地图片名(.jpg/.gif请带上后缀)
-//    imageAdconfiguration.imageNameOrURLString = @"image0.jpg";
-//    //设置GIF动图是否只循环播放一次(仅对动图设置有效)
-//    imageAdconfiguration.GIFImageCycleOnce = NO;
-//    //网络图片缓存机制(只对网络图片有效)
-//    imageAdconfiguration.imageOption = XHLaunchAdImageRefreshCached;
-//    //图片填充模式
-//    imageAdconfiguration.contentMode = UIViewContentModeScaleToFill;
-//     //广告点击打开页面参数(openModel可为NSString,模型,字典等任意类型)
-//    imageAdconfiguration.openModel = @"http://www.it7090.com";
-//    //广告显示完成动画
-//    imageAdconfiguration.showFinishAnimate =ShowFinishAnimateFadein;
-//    //广告显示完成动画时间
-//    imageAdconfiguration.showFinishAnimateTime = 0.8;
-//    //跳过按钮类型
-//    imageAdconfiguration.skipButtonType = SkipTypeTimeText;
-//    //后台返回时,是否显示广告
-//    imageAdconfiguration.showEnterForeground = NO;
-    
-    //这个暂时不用
-    func setGifLauchImage() {
-          let lauchvc = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
 
-          let gifPath = Bundle.main.url(forResource: "adImage4", withExtension: "gif")
-          let launchImgV = UIImageView()
-          launchImgV.frame = (window?.frame)!
-          launchImgV.image = UIImage.animatedImage(withAnimatedGIFURL: gifPath!)
-          lauchvc?.view.addSubview(launchImgV)
-        
-
-          self.window?.addSubview((lauchvc?.view)!)
-          self.window?.bringSubviewToFront((lauchvc?.view)!)
-          launchImgV.backgroundColor = UIColor.white
-          window?.rootViewController = lauchvc
-
-           DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: {
-               launchImgV.removeFromSuperview()
-               self.window?.rootViewController = MainTabBarController()
-          })
-        
-     }
 
 //
      func applicationWillResignActive(_ application: UIApplication) {

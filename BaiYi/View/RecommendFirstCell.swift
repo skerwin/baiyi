@@ -21,10 +21,24 @@ class RecommendFirstCell: UITableViewCell {
         // Initialization code
     }
 
+    @IBOutlet weak var headImage: UIImageView!
+    @IBOutlet weak var writer: UILabel!
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
     }
     
+    
+    var model:ArticleModel? {
+             didSet {
+                title.text = model?.title
+                adimage.displayImageWithURL(url: model?.img_url)
+                readCount.text = "\(model?.hits ?? 0)"
+                commentCount.text = "\(model?.comments ?? 0)"
+                headImage.displayHeadImageWithURL(url: model?.publisher?.avatar_url)
+                writer.text = model?.publisher?.name
+                
+        }
+    }
 }

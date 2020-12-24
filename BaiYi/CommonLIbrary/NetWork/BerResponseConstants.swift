@@ -13,22 +13,22 @@ import Foundation
 struct BerResponseConstants {
     
     static let responseTimestamp = "responseTimestamp"
-    static let responseCode = "responseCode"
+    static let responseCode = "code"
     static let errorCode = "errorCode"
     
-    static let responseData = "responseData"
-    static let desc = "desc"
+    static let responseData = "data"
+    static let desc = "msg"
     static let error = "error"
     static let errorMessage = "errorMessage"
     static let token = "token"
     
-    static let networkNotConnectedTips = "服务器返回异常，或网络不可用"
+    static let networkNotConnectedTips = "数据异常，或网络不可用"
     static let noPermissionTips = "你的账号在其他设备登录或者个人信息异常，请重新登录"
     
     enum Code: String {
-        case Success = "000000", NetworkNotConnected = "100888", NoPermission = "999999", NoBankCard = "800005", PassWordCode = "210016"
+        case Success = "1", TokenFailure = "1001",uploadSuccess = "201", NetworkNotConnected = "100888", NoPermission = "999999", NoBankCard = "800005", PassWordCode = "210016", TokenDeleted = "1002"
     }
-    
+     
     static func isNetworkNotConnectedError(responseCode: String) -> Bool {
         if responseCode == Code.NetworkNotConnected.rawValue {
             return true

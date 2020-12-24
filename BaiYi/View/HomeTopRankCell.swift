@@ -13,6 +13,15 @@ class HomeTopRankCell: UITableViewCell {
     let radio:CGFloat = 3/5
     @IBOutlet weak var RankCollectIonView: UICollectionView!
     
+    var parentNavigationController: UINavigationController?
+ 
+    
+    var rankArticleModelList:[ArticleModel]!
+       
+    var rankCaseModelList:[CaseModel]!
+       
+    var rankvideoModelList:[videoModel]!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
                //设置collectionView的代理
@@ -33,8 +42,7 @@ class HomeTopRankCell: UITableViewCell {
         self.RankCollectIonView!.register(UINib(nibName:"ReportSmallCell", bundle:nil),
 
                                                     forCellWithReuseIdentifier: "ReportSmallCell")
-
-    }
+     }
 
     
     
@@ -62,29 +70,35 @@ extension HomeTopRankCell:UICollectionViewDataSource,UICollectionViewDelegate {
   func collectionView(_ collectionView:UICollectionView, cellForItemAt indexPath:IndexPath) -> UICollectionViewCell {
       
     let row = indexPath.row
-    var cell:UICollectionViewCell?
-    if row == 0{
-          cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArticleSmallCell.nameOfClass, for: indexPath) as! ArticleSmallCell
+     if row == 0{
+         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArticleSmallCell.nameOfClass, for: indexPath) as! ArticleSmallCell
+          cell.modelList = self.rankArticleModelList
+        cell.parentNavigationController = self.parentNavigationController
+
+        return cell
     }else if row == 2{
-          cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChannelSmallCell.nameOfClass, for: indexPath) as! ChannelSmallCell
+          let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChannelSmallCell.nameOfClass, for: indexPath) as! ChannelSmallCell
+         cell.modelList = self.rankvideoModelList
+        cell.parentNavigationController = self.parentNavigationController
+        return cell
     }else{
-          cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReportSmallCell.nameOfClass, for: indexPath) as! ReportSmallCell
+         let  cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReportSmallCell.nameOfClass, for: indexPath) as! ReportSmallCell
+        cell.modelList = self.rankCaseModelList
+        cell.parentNavigationController = self.parentNavigationController
+        return cell
     }
-     
-    return cell!
+   
   }
  
-  
    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-      print("(\((indexPath as NSIndexPath).section), \((indexPath as NSIndexPath).row))")
+  
   }
 }
 extension HomeTopRankCell:UICollectionViewDelegateFlowLayout{
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let size = CGSize.init(width: screenWidth, height: 260)
-        print(size)
+        let size = CGSize.init(width: screenWidth, height: 290)
         return size
     }
     

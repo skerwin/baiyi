@@ -11,35 +11,22 @@ import UIKit
  //// MARK: - UITableView的扩展
 //
 extension UITableView {
-//
-//    func baseStyleCell(textColor: UIColor, fontSize: CGFloat) -> UITableViewCell {
-//        let cell = UITableViewCell()
-//        cell.textLabel?.textColor = textColor
-//        cell.textLabel?.font = UIFont.systemFontOfSize(fontSize)
-//        return cell
-//    }
-//    func baseStyleCell() -> UITableViewCell {
-//        let textColor = uicolorFromHex(0x7C7E7E)
-//        let fontSize: CGFloat = 15
-//        return baseStyleCell(textColor, fontSize: fontSize)
-//    }
-//
+ 
     func tableViewDisplayWithMsg(message: String , rowCount: Int, isdisplay: Bool = false) {
-//        if isdisplay {
-//            if rowCount == 0 {
-//                let emptyDataView = Bundle.main.loadNibNamed("EmptyDataView", owner: nil, options: nil)?.first as? EmptyDataView
-//                let emptyDataViewHeight: CGFloat = 245
-//                emptyDataView!.frame = CGRect.init(x: 0, y: 0, width: screenWidth, height: emptyDataViewHeight)
-//                emptyDataView!.tipsLabel.text = message
-//                emptyDataView!.retryButton.isHidden = true
-//                self.backgroundView = emptyDataView
-//                self.separatorStyle = UITableViewCell.SeparatorStyle.none
-//            } else {
-//                self.backgroundView = nil
-//            }
-//        }else{
-//            self.backgroundView = nil
-//        }
+        if isdisplay {
+            if rowCount == 0 {
+                let emptyDataView = Bundle.main.loadNibNamed("EmptyDataView", owner: nil, options: nil)?.first as? EmptyDataView
+                let emptyDataViewHeight: CGFloat = 245
+                emptyDataView!.frame = CGRect.init(x: 0, y: 0, width: screenWidth, height: emptyDataViewHeight)
+                emptyDataView!.tipsLabel.text = message
+                self.backgroundView = emptyDataView
+                self.separatorStyle = UITableViewCell.SeparatorStyle.none
+            } else {
+                self.backgroundView = nil
+            }
+        }else{
+            self.backgroundView = nil
+        }
     
     }
 //    func setRetryButtonStyle(retryButton: UIButton) {
@@ -71,23 +58,4 @@ extension UITableView {
 //        return gridViewRows
 //    }
 }
-//
-//extension UITableViewCell {
-//    func removeMargins() {
-//        // Remove separator inset
-//        if self.respondsToSelector(Selector("setSeparatorInset:")) {
-//            self.separatorInset = UIEdgeInsetsZero
-//        }
-//
-//        // Prevent the cell from inheriting the Table View's margin settings
-//        if self.respondsToSelector(Selector("setPreservesSuperviewLayoutMargins:")) {
-//            self.preservesSuperviewLayoutMargins = false
-//        }
-//
-//        // Explictly set your cell's layout margins
-//        if self.respondsToSelector(Selector("setLayoutMargins:")) {
-//            self.layoutMargins = UIEdgeInsetsZero
-//        }
-//    }
-//}
-
+ 

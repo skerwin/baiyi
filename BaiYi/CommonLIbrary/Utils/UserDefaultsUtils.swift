@@ -30,6 +30,13 @@ public func doubleForKey(key: String) -> Double? {
     return value
 }
 
+public func intForKey(key: String) -> Int? {
+    var value: Int?
+    let userDefaults = UserDefaults()
+    value = userDefaults.integer(forKey: key) as Int?
+    return value
+}
+
 func boolForKey(key: String) -> Bool {
     var value = false
     let userDefaults = UserDefaults()
@@ -42,6 +49,18 @@ func setValueForKey(value: AnyObject?, key: String) {
     userDefaults.setValue(value, forKey: key)
     userDefaults.synchronize()
 }
+
+func setStringValueForKey(value: String?, key: String) {
+    let userDefaults = UserDefaults()
+    userDefaults.setValue(value, forKey: key)
+    userDefaults.synchronize()
+}
+func setIntValueForKey(value: Int?, key: String) {
+    let userDefaults = UserDefaults()
+    userDefaults.setValue(value, forKey: key)
+    userDefaults.synchronize()
+}
+
 
 func removeValueForKey(key: String) {
     let userDefaults = UserDefaults()

@@ -25,7 +25,10 @@ class DialogueUtils: NSObject {
         SVProgressHUD.setForegroundColor(UIColor.white)
         SVProgressHUD.setFont(UIFont.systemFont(ofSize: 14))
         SVProgressHUD.setDefaultMaskType(SVProgressHUDMaskType.none)
-    }
+        SVProgressHUD.setMaximumDismissTimeInterval(2)
+        SVProgressHUD.setMinimumDismissTimeInterval(1)
+        SVProgressHUD.setGraceTimeInterval(2)
+     }
     
     //成功
     class func showSuccess(withStatus string: String?) {
